@@ -1,14 +1,7 @@
 const Token = artifacts.require("MyToken");
 
-const { assert } = require("chai");
-let chai = require("chai");
+const chai = require("./setupchai.js");
 const BN = web3.utils.BN;
-const chaiBN = require("chai-bn")(BN);
-chai.use(chaiBN);
-
-var chaiAsPromised = require("chai-as-promised");
-chai.use(chaiAsPromised);
-
 const expect = chai.expect;
 
 contract("Token Test", async (accounts) => {
@@ -31,7 +24,7 @@ contract("Token Test", async (accounts) => {
     // );
 
     // OPTION #2
-    expect(
+    return expect(
       instance.balanceOf(deployerAccount)
     ).to.eventually.be.a.bignumber.equal(totalSupply);
   });
@@ -50,9 +43,9 @@ contract("Token Test", async (accounts) => {
       instance.balanceOf(deployerAccount)
     ).to.eventually.be.a.bignumber.equal(totalSupply.sub(new BN(sendTokens)));
 
-    expect(instance.balanceOf(recipient)).to.eventually.be.a.bignumber.equal(
-      new BN(sendTokens)
-    );
+    return expect(
+      instance.balanceOf(recipient)
+    ).to.eventually.be.a.bignumber.equal(new BN(sendTokens));
   });
 
   it("is not possible to send more tokens than available in total", async () => {
@@ -62,7 +55,7 @@ contract("Token Test", async (accounts) => {
     expect(instance.transfer(recipient, new BN(balanceOfDeployer + 1))).to
       .eventually.be.rejected;
 
-    expect(
+    return expect(
       instance.balanceOf(deployerAccount)
     ).to.eventually.be.a.bignumber.equal(balanceOfDeployer);
   });
